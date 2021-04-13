@@ -1,0 +1,103 @@
+* {
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  outline: none;
+  text-decoration: none;
+  font-weight: normal;
+}
+
+body,
+html {
+  min-height: 100%;
+  height: 100%;
+}
+
+#__nuxt,
+#__layout,
+#app {
+  min-height: 100%;
+}
+
+img {
+  display: block;
+  border: 0;
+}
+
+.clear {
+  clear: both;
+}
+
+.w1000 {
+  width: 1000px;
+  margin: 0 auto;
+}
+
+.clear:after {
+  content: "";
+  display: table;
+  width: 100%;
+  clear: both;
+}
+
+.clear:before {
+  content: "";
+  display: table;
+  width: 100%;
+  clear: both;
+}
+
+.flex-items {
+  display: flex;
+  align-items: center;
+}
+
+.flex-start {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cell {
+  flex: 1;
+  width: 0;
+}
+
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}
+
+.align-center {
+  -webkit-align-self: center;
+  align-self: center;
+}
+
+.ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ellipsis-two {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.example {
+  text-align: center;
+  border-radius: 4px;
+  padding: 20px 50px;
+}
