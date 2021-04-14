@@ -4,7 +4,7 @@
       <div class="logo">
         <a href="">幕冬有柒</a>
       </div>
-      <div class="nav-wapper">
+      <div class="nav-wapper flex-items">
         <ul class="nav flex-items">
           <li class="nav-item">
             <nuxt-link to="/" class="item">
@@ -13,12 +13,41 @@
             </nuxt-link>
           </li>
           <li class="nav-item">
+            <el-dropdown>
+              <span class='item'>
+                <i class='iconfont icon-list-ul' />
+                <span>分类</span>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>黄金糕</el-dropdown-item>
+                <el-dropdown-item>狮子头</el-dropdown-item>
+                <el-dropdown-item>螺蛳粉</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </li>
+          <li class="nav-item">
             <nuxt-link to="/archives" class="item">
               <i class='iconfont icon-archive' />
               <span>归档</span>
             </nuxt-link>
           </li>
+          <li class="nav-item">
+            <nuxt-link to="/links" class="item">
+              <i class='iconfont icon-link' />
+              <span>友人帐</span>
+            </nuxt-link>
+          </li>
+          <li class="nav-item">
+            <nuxt-link to="/tags" class="item">
+              <i class='iconfont icon-tag' />
+              <span>标签墙</span>
+            </nuxt-link>
+          </li>
         </ul>
+        <div class="nav-search">
+          <i class="el-icon-search"></i>
+          <i class="el-icon-user"></i>
+        </div>
       </div>
     </div>
   </div>
@@ -325,6 +354,33 @@
       border-width: 10px;
       border-style: solid;
       border-color: transparent transparent #fff transparent;
+    }
+  }
+
+  .nav-search {
+    i {
+      margin-left: 20px;
+      color: #666666;
+      cursor: data-uri('../assets/images/ayuda.cur'), auto !important;
+    }
+
+    i:hover {
+      color: #fe9600;
+    }
+
+    .el-icon-search {
+      font-size: 22px;
+    }
+
+    .el-icon-user {
+      font-size: 24px;
+    }
+
+    img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-left: 20px;
     }
   }
 

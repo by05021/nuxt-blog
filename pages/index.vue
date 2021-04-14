@@ -9,6 +9,6 @@
 
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 
 </style>

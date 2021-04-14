@@ -1,18 +1,18 @@
 <template>
   <div id="app">
-    <Header/>
+    <Header />
     <Nuxt />
   </div>
 </template>
 <script>
   import Header from '../components/Header';
   export default {
-    components:{
+    components: {
       Header
     }
   }
 
 </script>
-<style lang="less">
+<style lang="less" scoped>
 
 </style>
