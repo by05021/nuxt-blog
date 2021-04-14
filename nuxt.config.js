@@ -11,7 +11,8 @@ export default {
       { hid: 'description', name: 'description', content: '个人博客' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'stylesheet', href: '//at.alicdn.com/t/font_1569838_jvrdyorwtit.css' }
     ]
   },
 
