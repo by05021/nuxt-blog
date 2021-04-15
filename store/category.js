@@ -3,7 +3,6 @@ export const state = () => ({
     size: 10,
     finished: false,
     loading: true,
-    categoryList: []
 });
 
 export const mutations = {
@@ -15,16 +14,11 @@ export const mutations = {
     },
     setLoading(state, data) {
         state.loading = data;
-    },
-    setCategoryList(state, data) {
-        state.categoryList = data;
-    },
+    }
 };
 
 export const actions = {
-    async getCategoryList({ commit }, { page, siez, categoryId }) {
-        const list = await this.$axios.$get('/api/blog/posts/posts/v1/list', { params: { page, siez, categoryId } });
-        console.log(list);
-        // commit('setCategoryList', list);
+    getCategoryList({ commit }, { page, siez, categoryId }) {
+        return this.$axios.$get('/api/blog/posts/posts/v1/list', { params: { page, siez, categoryId } });
     }
 }

@@ -2,7 +2,7 @@
   <div class="header-wrapper">
     <div class="nav-wrapper">
       <div class="logo">
-        <a href="">幕冬有柒</a>
+        <a href="">{{ userInfo.name }}</a>
       </div>
       <div class="nav-wapper flex-items">
         <ul class="nav flex-items">
@@ -47,6 +47,28 @@
               <span>标签墙</span>
             </nuxt-link>
           </li>
+          <li class="nav-item" v-for="(item, index) in menu" :key="index">
+            <el-dropdown v-if="item.child && item.child.length > 0">
+              <span class="item">
+                <i :class="item.icon" />
+                <span>{{ item.title }}</span>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item, index) in item.child"
+                  :key="index"
+                >
+                  <a :href="item.url" target="_blank">
+                    {{ item.title }}
+                  </a>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <a :href="item.url" target="_blank" class="item" v-else>
+              <i :class="item.icon" />
+              <span>{{ item.title }}</span>
+            </a>
+          </li>
         </ul>
         <div class="nav-search">
           <i class="el-icon-search"></i>
@@ -62,6 +84,8 @@ import { mapState } from "vuex";
 export default {
   computed: {
     ...mapState(["categoryNav"]),
+    ...mapState(["menu"]),
+    ...mapState(["userInfo"]),
   },
   methods: {
     handleCommand(command) {
