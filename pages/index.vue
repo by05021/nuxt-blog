@@ -44,12 +44,13 @@
         </div>
       </div>
     </div>
+    <div id="indexContent" style="height: 2000px"></div>
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import { getrand } from "../middleware/public";
+import { getrand, scrollAnimation } from "../middleware/public";
 export default {
   async asyncData({ store }) {
     const banner = store.state.bannerList;
@@ -66,27 +67,21 @@ export default {
     ...mapState(["userInfo"]),
     ...mapState(["bannerList"]),
   },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.changeInnerHeight);
+  },
   mounted() {
     this.innerHeight = window.innerHeight;
+    window.addEventListener("resize", this.changeInnerHeight);
   },
   methods: {
+    changeInnerHeight() {
+      this.innerHeight = window.innerHeight;
+    },
     //向下滚动
     handletopDown() {
-      const targetY = document.getElementById("indexContent").offsetTop;
-      const needScrollTop = targetY - 0;
-      const _currentY = 0;
-      setTimeout(() => {
-        // 一次调用滑动帧数，每次调用会不一样
-        const dist = Math.ceil(needScrollTop / 10);
-        _currentY += dist;
-        window.scrollTo(_currentY, currentY);
-        // 如果移动幅度小于十个像素，直接移动，否则递归调用，实现动画效果
-        if (needScrollTop > 10 || needScrollTop < -10) {
-          scrollAnimation(_currentY, targetY);
-        } else {
-          window.scrollTo(_currentY, targetY);
-        }
-      }, 1);
+      const content = document.getElementById("indexContent").offsetTop;
+      scrollAnimation(0, content);
     },
     // 切换banner
     getBanner() {

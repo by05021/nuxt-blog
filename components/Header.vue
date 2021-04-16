@@ -1,7 +1,7 @@
 <template>
   <div class="header-wrapper">
     <div class="nav-wrapper" :class="{ 'nav-fixed': isFixed }">
-      <div class="logo">
+      <div class="logo flex-items">
         <a href="">{{ userInfo.name }}</a>
         <a-icon type="menu" @click="handlePhoneVisible" />
       </div>
@@ -193,8 +193,8 @@ export default {
       return document.getElementById("area");
     },
     //点击分类
-    handleCommandClick(command) {
-      this.$router.push({ name: "category-id", params: { id: command } });
+    handleCommandClick({ key }) {
+      this.$router.push({ name: "category-id", params: { id: key } });
     },
     //显示隐藏搜索
     handleSearchVisible() {
@@ -235,7 +235,10 @@ export default {
         this.$router.push({ path: url });
       }
       this.phoneVisible = false;
+      document.body.style.height = "";
+      document.body.style.overflow = "";
     },
+    //当页面滚动
     handleScroll() {
       let scrollTop =
         window.pageYOffset ||
@@ -441,7 +444,7 @@ export default {
   }
 
   i {
-    font-size: 22px;
+    font-size: 20px;
     color: #666666;
     cursor: data-uri("../assets/images/ayuda.cur"), auto;
     display: none;
@@ -488,7 +491,7 @@ export default {
 
 .nav {
   height: 75px;
-
+  margin: 0;
   @media (max-width: 768px) {
     display: none;
   }
@@ -509,6 +512,7 @@ export default {
 
   .item i {
     margin-right: 5px;
+    font-size: 16px;
   }
 
   .item:after {
@@ -560,6 +564,7 @@ export default {
   display: flex;
   align-items: center;
   i {
+    font-size: 20px;
     margin-left: 20px;
     color: #666666;
     cursor: data-uri("../assets/images/ayuda.cur"), auto !important;
