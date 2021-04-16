@@ -18,13 +18,12 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    'assets/css/theme/index.css',
     'assets/css/base.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '@/plugins/element-ui',
+    '@/plugins/antd-ui',
     '@/plugins/router',
     '@/plugins/axios'
   ],
@@ -41,7 +40,9 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
   ],
-
+  loading: {
+    color: '#fe9600',
+  },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     proxy: true
@@ -55,6 +56,16 @@ export default {
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    transpile: [/^element-ui/],
+    babel: {
+      plugins: [
+        ['import', {
+          libraryName: 'ant-design-vue',
+          libraryDirectory: 'lib', // 默认'lib'，也可视情况改为 'es'，通过查看组件可知这两个目录均存在。
+          style: 'css',  // true 代表使用less, 若使用css文件，可设置为 'css'
+        },
+          "ant-design-vue"]
+      ]
+    },
+    transpile: ['ant-design-vue']
   }
 }

@@ -2,7 +2,29 @@ export const state = () => ({
     categoryNav: [],
     userInfo: {},
     config: [],
-    menu: []
+    menu: [],
+    ListImg: [
+        { img: 'https://image.bygit.cn/list_01.png' },
+        { img: 'https://image.bygit.cn/list_02.png' },
+        { img: 'https://image.bygit.cn/list_03.png' },
+        { img: 'https://image.bygit.cn/list_04.png' },
+        { img: 'https://image.bygit.cn/list_05.png' },
+        { img: 'https://image.bygit.cn/list_06.png' },
+        { img: 'https://image.bygit.cn/list_07.png' },
+        { img: 'https://image.bygit.cn/list_08.png' },
+        { img: 'https://image.bygit.cn/list_09.png' },
+        { img: 'https://image.bygit.cn/list_10.png' },
+        { img: 'https://image.bygit.cn/list_11.png' },
+        { img: 'https://image.bygit.cn/list_12.png' },
+        { img: 'https://image.bygit.cn/list_13.png' },
+        { img: 'https://image.bygit.cn/list_14.png' }
+    ],
+    bannerList: [
+        { img: "https://image.bygit.cn/banner-1.png" },
+        { img: "https://image.bygit.cn/banner-2.png" },
+        { img: "https://image.bygit.cn/banner-3.png" },
+        { img: "https://image.bygit.cn/banner-4.png" },
+    ],
 })
 
 export const mutations = {
@@ -29,9 +51,9 @@ export const actions = {
             $axios.$get('/api/blog/config/config-base/v1/list'),
             $axios.$get('/api/blog/menu/front/v1/list?page=1&size=10')
         ])
-        commit('setCategoryNav', categoryNav.value.models);
-        commit('setUserInfo', userInfo.value.model);
-        commit('setConfig', config.value.models);
-        commit('setMenu', menu.value.models)
+        commit('setCategoryNav', categoryNav.value ? categoryNav.value.models : []);
+        commit('setUserInfo', userInfo.value ? userInfo.value.model : {});
+        commit('setConfig', config.value ? config.value.models : []);
+        commit('setMenu', menu.value ? menu.value.models : [])
     },
 }

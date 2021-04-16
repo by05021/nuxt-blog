@@ -1,8 +1,9 @@
 <template>
   <div class="header-wrapper">
-    <div class="nav-wrapper">
+    <div class="nav-wrapper" :class="{ 'nav-fixed': isFixed }">
       <div class="logo">
         <a href="">{{ userInfo.name }}</a>
+        <a-icon type="menu" @click="handlePhoneVisible" />
       </div>
       <div class="nav-wapper flex-items">
         <ul class="nav flex-items">
@@ -12,22 +13,18 @@
               <span>首页</span>
             </nuxt-link>
           </li>
-          <li class="nav-item">
-            <el-dropdown @command="handleCommand">
+          <li class="nav-item" id="area">
+            <a-dropdown :getPopupContainer="getById">
               <span class="item">
                 <i class="iconfont icon-list-ul" />
                 <span>分类</span>
               </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-for="(item, index) in categoryNav"
-                  :key="index"
-                  :command="item.id"
-                >
+              <a-menu slot="overlay" @click="handleCommandClick">
+                <a-menu-item v-for="item in categoryNav" :key="item.id">
                   {{ item.name }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
           </li>
           <li class="nav-item">
             <nuxt-link to="/archives" class="item">
@@ -36,7 +33,7 @@
             </nuxt-link>
           </li>
           <li class="nav-item">
-            <nuxt-link to="/links" class="item">
+            <nuxt-link to="/nuxt-links" class="item">
               <i class="iconfont icon-link" />
               <span>友人帐</span>
             </nuxt-link>
@@ -47,34 +44,124 @@
               <span>标签墙</span>
             </nuxt-link>
           </li>
-          <li class="nav-item" v-for="(item, index) in menu" :key="index">
-            <el-dropdown v-if="item.child && item.child.length > 0">
+          <!-- 自定义导航 -->
+          <li
+            class="nav-item"
+            v-for="(item, index) in menu"
+            :key="index"
+            :id="'area' + item.id"
+          >
+            <a-dropdown v-if="item.child && item.child.length > 0">
               <span class="item">
-                <i :class="item.icon" />
+                <a-icon :type="item.icon" />
                 <span>{{ item.title }}</span>
               </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-for="(item, index) in item.child"
-                  :key="index"
-                >
+              <a-menu slot="overlay">
+                <a-menu-item v-for="(item, index) in item.child" :key="index">
                   <a :href="item.url" target="_blank">
                     {{ item.title }}
                   </a>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
             <a :href="item.url" target="_blank" class="item" v-else>
-              <i :class="item.icon" />
+              <a-icon :type="item.icon" />
               <span>{{ item.title }}</span>
             </a>
           </li>
         </ul>
         <div class="nav-search">
-          <i class="el-icon-search"></i>
-          <i class="el-icon-user"></i>
+          <a-icon type="search" @click="handleSearchVisible" />
+          <a-icon type="user" />
         </div>
       </div>
+    </div>
+    <!-- 搜索 -->
+    <div
+      class="search-form search-form--modal"
+      :class="{ 'is-visible': searchVisible }"
+    >
+      <div class="search-form__inner">
+        <div class="box">
+          <p class="micro mb-">想要找点什么呢？</p>
+          <a-icon type="search" />
+          <input
+            type="search"
+            name="s"
+            placeholder="Search"
+            v-model="searchVal"
+            @keypress.13="handleSearchKeypress"
+          />
+        </div>
+      </div>
+      <div class="search_close" @click="handleSearchVisible"></div>
+    </div>
+    <!-- 手机端导航 -->
+    <div
+      class="Mask"
+      :class="{ show: phoneVisible, hidden: !phoneVisible }"
+      @click="handlePhoneVisible"
+    ></div>
+    <div class="MoNav mo-nav" :class="{ open: phoneVisible }">
+      <div class="m-avatar"><img :src="userInfo.avatar" alt="" /></div>
+      <p class="name ellipsis">{{ userInfo.name }}</p>
+      <p class="info ellipsis">{{ userInfo.introduction }}</p>
+      <ul class="menu">
+        <li>
+          <span class="item flex-items" @click="handleOpenUrl('/')">
+            <i class="iconfont icon-fort-awesome" />
+            <span>首页</span>
+          </span>
+        </li>
+        <li>
+          <span class="item flex-items">
+            <i class="iconfont icon-list-ul" />
+            <span>分类</span>
+          </span>
+          <ul class="sub-menu">
+            <li v-for="(item, index) in categoryNav" :key="index">
+              <span
+                class="item flex-items"
+                @click="handleOpenUrl('/category', item.id)"
+              >
+                <span>{{ item.name }}</span>
+              </span>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <span class="item flex-items" @click="handleOpenUrl('/archives')">
+            <i class="iconfont icon-archive" />
+            <span>归档</span>
+          </span>
+        </li>
+        <li>
+          <span class="item flex-items" @click="handleOpenUrl('/links')">
+            <i class="iconfont icon-link" />
+            <span>友人帐</span>
+          </span>
+        </li>
+        <li>
+          <span class="item flex-items" @click="handleOpenUrl('/tags')">
+            <i class="iconfont icon-tag" />
+            <span>标签墙</span>
+          </span>
+        </li>
+        <!-- 自定义菜单 -->
+        <li v-for="(item, index) in menu" :key="index">
+          <a :href="item.url" target="_blank" class="item flex-items">
+            <i :class="item.icon" />
+            <span>{{ item.title }}</span>
+          </a>
+          <ul class="sub-menu" v-if="item.child && item.child.length > 0">
+            <li v-for="(item, index) in item.child" :key="index">
+              <a :href="item.url" target="_blank" class="item flex-items">
+                <span>{{ item.title }}</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -82,14 +169,84 @@
 <script>
 import { mapState } from "vuex";
 export default {
+  data() {
+    return {
+      searchVisible: false,
+      phoneVisible: false,
+      searchVal: "",
+      isFixed: false,
+    };
+  },
   computed: {
     ...mapState(["categoryNav"]),
     ...mapState(["menu"]),
     ...mapState(["userInfo"]),
   },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.handleScroll);
+  },
+  mounted() {
+    window.addEventListener("scroll", this.handleScroll);
+  },
   methods: {
-    handleCommand(command) {
+    getById() {
+      return document.getElementById("area");
+    },
+    //点击分类
+    handleCommandClick(command) {
       this.$router.push({ name: "category-id", params: { id: command } });
+    },
+    //显示隐藏搜索
+    handleSearchVisible() {
+      this.searchVisible = !this.searchVisible;
+    },
+    //搜索
+    handleSearchKeypress() {
+      if (this.searchVal === "") {
+        this.$message({
+          message: "Please type in the content",
+          type: "warning",
+          center: true,
+        });
+      } else {
+        this.$router.push({
+          name: "search-id",
+          params: { id: this.searchVal },
+        });
+        this.searchVisible = false;
+      }
+    },
+    // 手机端导航显示隐藏
+    handlePhoneVisible() {
+      if (!this.phoneVisible) {
+        document.body.style.height = "100%";
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.height = "";
+        document.body.style.overflow = "";
+      }
+      this.phoneVisible = !this.phoneVisible;
+    },
+    //手机端导航点击
+    handleOpenUrl(url, id) {
+      if (id) {
+        this.$router.push({ name: "category-id", params: { id } });
+      } else {
+        this.$router.push({ path: url });
+      }
+      this.phoneVisible = false;
+    },
+    handleScroll() {
+      let scrollTop =
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop;
+      //设置背景颜色的透明读
+      if (scrollTop) {
+        this.isFixed = true;
+      } else if (scrollTop === 0) {
+        this.isFixed = false;
+      }
     },
   },
 };
@@ -266,6 +423,11 @@ export default {
   }
 }
 
+.nav-fixed {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 40px -8px rgba(0, 0, 0, 0.5);
+}
+
 .logo {
   float: left;
   height: 75px;
@@ -395,6 +557,8 @@ export default {
 }
 
 .nav-search {
+  display: flex;
+  align-items: center;
   i {
     margin-left: 20px;
     color: #666666;
@@ -405,19 +569,114 @@ export default {
     color: #fe9600;
   }
 
-  .el-icon-search {
-    font-size: 22px;
-  }
-
-  .el-icon-user {
-    font-size: 24px;
-  }
-
   img {
     width: 24px;
     height: 24px;
     border-radius: 50%;
     margin-left: 20px;
+  }
+}
+.Mask {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 998;
+  &.hidden {
+    display: none;
+  }
+  &.show {
+    display: block;
+  }
+}
+.MoNav {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  top: 0;
+  background-color: #ffffff;
+  width: 55%;
+  z-index: 999;
+  transition-duration: 0.5s;
+  overflow-y: scroll;
+  -webkit-transform: translateX(-100%) translateY(0px);
+  transform: translateX(-100%) translateY(0px);
+  &.open {
+    transform: translateX(0px) translateY(0px);
+    -webkit-transform: translateX(0px) translateY(0px);
+  }
+  .m-avatar {
+    width: 100%;
+    height: auto;
+    padding: 30px 0 20px;
+    text-align: center;
+  }
+  .m-avatar img {
+    width: 90px;
+    height: 90px;
+    max-width: 90px;
+    border-radius: 100%;
+  }
+  .name {
+    margin-bottom: 10px;
+    padding: 0 15px;
+    text-align: center;
+    font-size: 13px;
+    color: #333;
+  }
+  .info {
+    margin-bottom: 10px;
+    padding: 0 15px 15px 15px;
+    text-align: center;
+    font-size: 13px;
+    color: #333;
+    position: relative;
+  }
+  .menu {
+    position: relative;
+    &:after {
+      position: absolute;
+      right: 0px;
+      top: 0;
+      left: 0px;
+      height: 1px;
+      content: "";
+      -webkit-transform: scaleY(0.5);
+      transform: scaleY(0.5);
+      background-color: #f1f1f1;
+    }
+    .item {
+      position: relative;
+      padding: 10px 15px;
+      color: #333;
+      font-size: 14px;
+      span {
+        margin-left: 5px;
+      }
+      i {
+        font-size: 12px;
+      }
+      &:after {
+        position: absolute;
+        right: 0px;
+        bottom: 0;
+        left: 0px;
+        height: 1px;
+        content: "";
+        -webkit-transform: scaleY(0.5);
+        transform: scaleY(0.5);
+        background-color: #f1f1f1;
+      }
+    }
+  }
+  .sub-menu {
+    padding-left: 15px;
+    .item {
+      padding: 5px 10px;
+      font-size: 13px;
+    }
   }
 }
 </style>
