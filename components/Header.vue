@@ -203,11 +203,7 @@ export default {
     //搜索
     handleSearchKeypress() {
       if (this.searchVal === "") {
-        this.$message({
-          message: "Please type in the content",
-          type: "warning",
-          center: true,
-        });
+        this.$message.warning("Please type in the content");
       } else {
         this.$router.push({
           name: "search-id",

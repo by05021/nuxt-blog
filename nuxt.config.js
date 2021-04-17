@@ -18,7 +18,7 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    'assets/css/base.css'
+    'assets/css/base.less'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -56,16 +56,28 @@ export default {
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    // ... 省略其他配置
+    transpile: ['ant-design-vue'],
     babel: {
       plugins: [
         ['import', {
           libraryName: 'ant-design-vue',
           libraryDirectory: 'lib', // 默认'lib'，也可视情况改为 'es'，通过查看组件可知这两个目录均存在。
-          style: 'css',  // true 代表使用less, 若使用css文件，可设置为 'css'
+          style: true,  // true 代表使用less, 若使用css文件，可设置为 'css'
         },
           "ant-design-vue"]
       ]
     },
-    transpile: ['ant-design-vue']
+    // style: true时才需要，如果上面 style:'css'，则不需要该处的 loaders 配置
+    loaders: {
+      less: {
+        lessOptions: {
+          modifyVars: {
+            'primary-color': '#fe9600',
+          },
+          javascriptEnabled: true
+        }
+      }
+    }
   }
 }

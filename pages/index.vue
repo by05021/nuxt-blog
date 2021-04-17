@@ -22,7 +22,10 @@
         :style="{ backgroundImage: banner, height: innerHeight + 'px' }"
       >
         <div class="focusinfo">
-          <h1 class="glitch" data-text="Helloblog!">Helloblog!</h1>
+          <div class="header-tou">
+            <img :src="userInfo.avatar" alt="" />
+          </div>
+          <h1 class="glitch" data-text="Plumemo!">Plumemo!</h1>
           <div class="header-info">
             <p class="ellipsis">
               <i class="iconfont icon-quote-left" />
@@ -35,6 +38,31 @@
             <div class="top-social_v2">
               <li @click="getBanner">
                 <img class="flipx" src="../assets/images/next-b.svg" alt="" />
+              </li>
+              <li
+                :class="{
+                  img: item.showType === 1,
+                  text: item.showType === 2,
+                  link: item.showType === 3,
+                }"
+                v-for="(item, index) in socialList"
+                :key="index"
+              >
+                <img :src="item.icon" alt="" v-if="item.showType === 1" />
+                <div class="img-box" v-if="item.showType === 1">
+                  <img :src="item.content" alt="" />
+                </div>
+                <img :src="item.icon" alt="" v-if="item.showType === 2" />
+                <div class="text-box" v-if="item.showType === 2">
+                  <p>{{ item.content }}</p>
+                </div>
+                <a
+                  :href="item.content"
+                  target="_blank"
+                  v-if="item.showType === 3"
+                >
+                  <img :src="item.icon" alt="" />
+                </a>
               </li>
               <li @click="getBanner">
                 <img src="../assets/images/next-b.svg" alt="" />
@@ -55,7 +83,11 @@ export default {
   async asyncData({ store }) {
     const banner = store.state.bannerList;
     const num = getrand(0, banner.length - 1);
-    return { banner: `url('${banner[num].img}')` };
+    const data = await store.dispatch("getSocial");
+    return {
+      banner: `url('${banner[num].img}')`,
+      socialList: data ? data.models : [],
+    };
   },
   data() {
     return {
@@ -75,6 +107,7 @@ export default {
     window.addEventListener("resize", this.changeInnerHeight);
   },
   methods: {
+    //获取窗口高度
     changeInnerHeight() {
       this.innerHeight = window.innerHeight;
     },

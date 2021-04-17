@@ -56,4 +56,8 @@ export const actions = {
         commit('setConfig', config.value ? config.value.models : []);
         commit('setMenu', menu.value ? menu.value.models : [])
     },
+    //首页社交
+    getSocial() {
+        return this.$axios.$get('/api/blog/social/social/v1/info');
+    }
 }
