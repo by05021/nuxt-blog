@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <!-- banner -->
     <div class="banner-wrapper">
       <div class="waveWrapper waveAnimation">
         <div class="waveWrapperInner bgTop">
@@ -72,32 +73,110 @@
         </div>
       </div>
     </div>
-    <div id="indexContent" style="height: 2000px"></div>
+    <!-- banner-end -->
+    <!-- 内容区域 -->
+    <div id="indexContent">
+      <!-- 推荐 -->
+      <div class="feature-wrapper">
+        <div class="feature-title">
+          <h1><i class="iconfont icon-anchor" /><span> START:DASH!!</span></h1>
+        </div>
+        <a-row class="top-feature-row" :gutter="16">
+          <a-col
+            v-for="(item, index) in featureList"
+            :key="index"
+            :xs="24"
+            :sm="24"
+            :md="8"
+            :lg="8"
+            :xl="8"
+          >
+            <div class="top-feature-item">
+              <nuxt-link :to="{ name: 'article-id', params: { id: item.id } }">
+                <div class="img-box">
+                  <img
+                    :src="
+                      item.thumbnail ||
+                      ListImg[getrand(0, ListImg.length - 1)].img
+                    "
+                    alt=""
+                  />
+                </div>
+                <div class="info">
+                  <h3 class="ellipsis">{{ item.title }}</h3>
+                  <p class="ellipsis-two">{{ item.summary }}</p>
+                </div>
+              </nuxt-link>
+            </div>
+          </a-col>
+        </a-row>
+      </div>
+      <!-- 推荐-end -->
+      <div class="home-list">
+        <div class="feature-title">
+          <h1><i class="iconfont icon-anchor" /><span> Discovery</span></h1>
+        </div>
+        <div class="blog-list">
+          <HomeList
+            v-for="(item, index) in blogList"
+            :key="index"
+            :className="className[index % className.length]"
+            :id="item.id"
+            :thumbnail="
+              item.thumbnail || ListImg[getrand(0, ListImg.length - 1)].img
+            "
+            :createTime="getTime(item.createTime)"
+            :title="item.title"
+            :views="item.views"
+            :comments="item.comments"
+            :categoryName="item.categoryName || ''"
+            :summary="item.summary"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import { getrand, scrollAnimation } from "../middleware/public";
+import { getrand, scrollAnimation, getTime } from "../middleware/public";
+import HomeList from "../components/HomeList";
 export default {
+  components: {
+    HomeList,
+  },
   async asyncData({ store }) {
     const banner = store.state.bannerList;
     const num = getrand(0, banner.length - 1);
-    const data = await store.dispatch("getSocial");
+    const [socialList, featureList, blogList] = await Promise.allSettled([
+      store.dispatch("getSocial"),
+      store.dispatch("getFeature"),
+      store.dispatch("getBlogList"),
+    ]);
     return {
       banner: `url('${banner[num].img}')`,
-      socialList: data ? data.models : [],
+      socialList:
+        socialList.status === "fulfilled" ? socialList.value.models : [],
+      featureList:
+        featureList.status === "fulfilled" ? featureList.value.models : [],
+      blogList: blogList.status === "fulfilled" ? blogList.value.models : [],
     };
   },
   data() {
     return {
       banner: "",
       innerHeight: "",
+      className: [
+        "blog-item post-list-show left",
+        "blog-item post-list-show right",
+      ],
     };
   },
   computed: {
     ...mapState(["userInfo"]),
     ...mapState(["bannerList"]),
+    ...mapState(["ListImg"]),
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.changeInnerHeight);
@@ -115,6 +194,12 @@ export default {
     handletopDown() {
       const content = document.getElementById("indexContent").offsetTop;
       scrollAnimation(0, content);
+    },
+    getTime(createTime) {
+      return getTime(createTime);
+    },
+    getrand(m, n) {
+      return getrand(m, n);
     },
     // 切换banner
     getBanner() {
@@ -589,5 +674,130 @@ export default {
     transform: scaleX(-1);
     filter: FlipH;
   }
+}
+#indexContent {
+  width: 100%;
+  max-width: 900px;
+  padding: 0 10px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: rgba(255, 255, 255, 0.8);
+  animation: main 1s;
+  @keyframes main {
+    0% {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+.feature-wrapper {
+  @media (max-width: 768px) {
+    display: none;
+  }
+  .top-feature-row {
+    .top-feature-item {
+      position: relative;
+      height: 160px;
+      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border-radius: 10px;
+      a {
+        display: block;
+        height: 100%;
+      }
+      .img-box {
+        transition: all 0.35s ease-in-out;
+        transform: scale(1);
+        height: 100%;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      &:hover .img-box {
+        transform: scale(1.2);
+      }
+      .info {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        backface-visibility: hidden;
+        background: #333;
+        background: rgba(0, 0, 0, 0.6);
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.35s ease-in-out;
+        h3 {
+          text-transform: uppercase;
+          color: #fff;
+          text-align: center;
+          font-size: 17px;
+          padding: 10px;
+          background: #111;
+          margin: 40px 0 0;
+          transition: all 0.35s ease-in-out;
+          transform: translateX(-100%);
+        }
+        p {
+          font-style: italic;
+          font-size: 12px;
+          position: relative;
+          color: #bbb;
+          padding: 0 20px;
+          text-align: center;
+          transition: all 0.35s 0.1s linear;
+          transform: translateX(100%);
+          margin-top: 15px;
+          height: 40px;
+          line-height: 20px;
+        }
+      }
+      &:hover .info {
+        visibility: visible;
+        opacity: 1;
+        h3 {
+          transform: translateX(0);
+        }
+        p {
+          transform: translateX(0);
+        }
+      }
+    }
+  }
+}
+.feature-title {
+  width: 100%;
+  height: auto;
+  margin-top: 55px;
+  display: inline-block;
+  h1 {
+    color: #666;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+    line-height: 24px;
+    padding-bottom: 5px;
+    margin-bottom: 30px;
+    border-bottom: 1px dashed #ececec;
+  }
+  @media (max-width: 768px) {
+    margin-top: 15px;
+    h1 {
+      margin-bottom: 15px;
+    }
+  }
+}
+.home-list {
+  width: 100%;
+}
+.blog-list {
+  width: 100%;
 }
 </style>

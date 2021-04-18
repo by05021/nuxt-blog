@@ -51,13 +51,21 @@ export const actions = {
             $axios.$get('/api/blog/config/config-base/v1/list'),
             $axios.$get('/api/blog/menu/front/v1/list?page=1&size=10')
         ])
-        commit('setCategoryNav', categoryNav.value ? categoryNav.value.models : []);
-        commit('setUserInfo', userInfo.value ? userInfo.value.model : {});
-        commit('setConfig', config.value ? config.value.models : []);
-        commit('setMenu', menu.value ? menu.value.models : [])
+        commit('setCategoryNav', categoryNav.status === 'fulfilled' ? categoryNav.value.models : []);
+        commit('setUserInfo', userInfo.status === 'fulfilled' ? userInfo.value.model : {});
+        commit('setConfig', config.status === 'fulfilled' ? config.value.models : []);
+        commit('setMenu', menu.status === 'fulfilled' ? menu.value.models : [])
     },
     //首页社交
     getSocial() {
         return this.$axios.$get('/api/blog/social/social/v1/info');
+    },
+    //首页推荐
+    getFeature() {
+        return this.$axios.$get('/api/blog/posts/weight/v1/list?page=1&size=3');
+    },
+    //首页博客列表
+    getBlogList() {
+        return this.$axios.$get('/api/blog/posts/posts/v1/list');
     }
 }
