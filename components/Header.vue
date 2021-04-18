@@ -169,24 +169,20 @@
 <script>
 import { mapState } from "vuex";
 export default {
+  props: {
+    isFixed: Boolean,
+  },
   data() {
     return {
       searchVisible: false,
       phoneVisible: false,
       searchVal: "",
-      isFixed: false,
     };
   },
   computed: {
     ...mapState(["categoryNav"]),
     ...mapState(["menu"]),
     ...mapState(["userInfo"]),
-  },
-  beforeDestroy() {
-    window.removeEventListener("scroll", this.handleScroll);
-  },
-  mounted() {
-    window.addEventListener("scroll", this.handleScroll);
   },
   methods: {
     getById() {
@@ -233,19 +229,6 @@ export default {
       this.phoneVisible = false;
       document.body.style.height = "";
       document.body.style.overflow = "";
-    },
-    //当页面滚动
-    handleScroll() {
-      let scrollTop =
-        window.pageYOffset ||
-        document.documentElement.scrollTop ||
-        document.body.scrollTop;
-      //设置背景颜色的透明读
-      if (scrollTop) {
-        this.isFixed = true;
-      } else if (scrollTop === 0) {
-        this.isFixed = false;
-      }
     },
   },
 };

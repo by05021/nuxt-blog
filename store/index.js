@@ -1,7 +1,7 @@
 export const state = () => ({
     categoryNav: [],
     userInfo: {},
-    config: [],
+    config: {},
     menu: [],
     ListImg: [
         { img: 'https://image.bygit.cn/list_01.png' },
@@ -53,8 +53,18 @@ export const actions = {
         ])
         commit('setCategoryNav', categoryNav.status === 'fulfilled' ? categoryNav.value.models : []);
         commit('setUserInfo', userInfo.status === 'fulfilled' ? userInfo.value.model : {});
-        commit('setConfig', config.status === 'fulfilled' ? config.value.models : []);
+
         commit('setMenu', menu.status === 'fulfilled' ? menu.value.models : [])
+        if (config.status === 'fulfilled') {
+            const list = config.value.models
+            let arr = {};
+            for (let i = 0; i < list.length; i++) {
+                arr[list[i].configKey] = list[i].configValue
+            }
+            commit('setConfig', arr);
+        } else {
+            commit('setConfig', {});
+        }
     },
     //首页社交
     getSocial() {

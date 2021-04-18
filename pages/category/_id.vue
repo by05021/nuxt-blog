@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div style="height: 300px"></div>
+    <div style="height: 2300px"></div>
     <div v-for="(item, index) in categoryList" :key="index">
       {{ item.title }}
     </div>
