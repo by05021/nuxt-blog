@@ -41,7 +41,7 @@ export default {
       left: 0;
       height: 110px;
       opacity: 0;
-      .ant-back-top-content {
+      /deep/.ant-back-top-content {
         width: 70px;
         height: 110px;
         display: none;

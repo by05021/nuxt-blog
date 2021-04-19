@@ -4,12 +4,12 @@
     <div class="main-wrapper">
       <header class="page-header">
         <h1 class="page-title">
-          {{ `分类 “${name}” 下的文章` }}
+          {{ `标签 “${name}” 下的文章` }}
         </h1>
       </header>
       <div class="site-main">
         <CategoryList
-          v-for="(item, index) in categoryList"
+          v-for="(item, index) in tagsDetailsList"
           :key="index"
           :id="item.id"
           :thumbnail="item.thumbnail"
@@ -23,7 +23,7 @@
           :page="page"
           :finished="finished"
           :loading="loading"
-          :nextList="nextCategoryList"
+          :nextList="nextTagsDetailsList"
           :id="id"
         />
       </div>
@@ -32,10 +32,10 @@
 </template>
 
 <script>
-import { getrand, getTime } from "../../middleware/public";
+import { getrand, getTime } from "../../../middleware/public";
 import { mapState } from "vuex";
-import CategoryList from "../../components/CategoryList";
-import ArticleTop from "../../components/ArticleTop";
+import CategoryList from "../../../components/CategoryList";
+import ArticleTop from "../../../components/ArticleTop";
 export default {
   components: {
     CategoryList,
@@ -43,10 +43,9 @@ export default {
   },
   async asyncData({ params, store, error }) {
     const id = parseInt(params.id);
-    const { name } = store.state.categoryNav.find((item) => item.id === id);
-    const data = await store.dispatch("getCategoryList", {
+    const data = await store.dispatch("getTagsDetails", {
       page: 1,
-      categoryId: id,
+      postsTagsId: id,
     });
     let list = data.models;
     const ListImg = store.state.ListImg;
@@ -54,15 +53,15 @@ export default {
       list[i].thumbnail =
         list[i].thumbnail || ListImg[getrand(0, ListImg.length - 1)].img;
     }
-    if (data.success === 1) {
+    if (data.success === 1 && params.name) {
       return {
-        categoryList: list,
-        name: name,
+        tagsDetailsList: list,
+        name: params.name,
         id,
         topImg: ListImg[getrand(0, ListImg.length - 1)].img,
       };
     }
-    error({ statusCode: 504 });
+    error({ statusCode: 404 });
   },
   data() {
     return {
@@ -81,11 +80,11 @@ export default {
     getrand(m, n) {
       return getrand(m, n);
     },
-    async nextCategoryList(page, id) {
+    async nextTagsDetailsList(page, id) {
       this.loading = true;
-      const res = await this.$store.dispatch("getCategoryList", {
+      const res = await this.$store.dispatch("getTagsDetails", {
         page,
-        categoryId: id,
+        postsTagsId: id,
       });
       if (res.success === 1) {
         let current = res.pageInfo.page * res.pageInfo.size;
@@ -97,7 +96,7 @@ export default {
             this.ListImg[getrand(0, this.ListImg.length - 1)].img;
         }
         this.page = page + 1;
-        this.categoryList = this.categoryList.concat(list);
+        this.tagsDetailsList = this.tagsDetailsList.concat(list);
         this.loading = false;
         if (current > total) this.finished = true;
       }

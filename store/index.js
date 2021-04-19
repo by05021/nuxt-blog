@@ -24,7 +24,7 @@ export const state = () => ({
         { img: "https://image.bygit.cn/banner-2.png" },
         { img: "https://image.bygit.cn/banner-3.png" },
         { img: "https://image.bygit.cn/banner-4.png" },
-    ],
+    ]
 })
 
 export const mutations = {
@@ -39,7 +39,7 @@ export const mutations = {
     },
     setMenu(state, data) {
         state.menu = data
-    }
+    },
 }
 
 export const actions = {
@@ -53,7 +53,6 @@ export const actions = {
         ])
         commit('setCategoryNav', categoryNav.status === 'fulfilled' ? categoryNav.value.models : []);
         commit('setUserInfo', userInfo.status === 'fulfilled' ? userInfo.value.model : {});
-
         commit('setMenu', menu.status === 'fulfilled' ? menu.value.models : [])
         if (config.status === 'fulfilled') {
             const list = config.value.models
@@ -75,7 +74,27 @@ export const actions = {
         return this.$axios.$get('/api/blog/posts/weight/v1/list?page=1&size=3');
     },
     //首页博客列表
-    getBlogList() {
-        return this.$axios.$get('/api/blog/posts/posts/v1/list');
+    getBlogList({ commit }, { page }) {
+        return this.$axios.$get('/api/blog/posts/posts/v1/list', { params: { page, size: 10 } });
+    },
+    //分类列表
+    getCategoryList({ commit }, { page, categoryId }) {
+        return this.$axios.$get('/api/blog/posts/posts/v1/list', { params: { page, siez: 10, categoryId } });
+    },
+    // 文章归档
+    getArchives() {
+        return this.$axios.$get('/api/blog/posts/archive/v1/list');
+    },
+    // 友链
+    getLinks() {
+        return this.$axios.$get('/api/blog/link/link/v2/list');
+    },
+    // 标签墙列表
+    getTags() {
+        return this.$axios.$get('/api/blog/tags/tags-article-quantity/v1/list');
+    },
+    //标签详情
+    getTagsDetails({ commit }, { page, postsTagsId }) {
+        return this.$axios.$get('/api/blog/posts/posts/v1/list', { params: { page, siez: 10, postsTagsId } });
     }
 }

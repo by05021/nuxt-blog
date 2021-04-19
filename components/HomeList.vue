@@ -210,14 +210,14 @@ export default {
     .post-thumb {
       width: 100%;
       left: 0;
-      clear: initial;
+      clear: both;
       a {
         height: 210px;
         border-radius: 10px;
       }
     }
     .post-content-wrap {
-      clear: initial;
+      clear: both;
       width: 100%;
       left: 0;
       text-align: left;

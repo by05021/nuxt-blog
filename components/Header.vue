@@ -33,7 +33,7 @@
             </nuxt-link>
           </li>
           <li class="nav-item">
-            <nuxt-link to="/nuxt-links" class="item">
+            <nuxt-link to="/links" class="item">
               <i class="iconfont icon-link" />
               <span>友人帐</span>
             </nuxt-link>

@@ -112,6 +112,7 @@
         </a-row>
       </div>
       <!-- 推荐-end -->
+      <!-- 首页列表 -->
       <div class="home-list">
         <div class="feature-title">
           <h1><i class="iconfont icon-anchor" /><span> Discovery</span></h1>
@@ -122,9 +123,7 @@
             :key="index"
             :className="className[index % className.length]"
             :id="item.id"
-            :thumbnail="
-              item.thumbnail || ListImg[getrand(0, ListImg.length - 1)].img
-            "
+            :thumbnail="item.thumbnail"
             :createTime="getTime(item.createTime)"
             :title="item.title"
             :views="item.views"
@@ -133,6 +132,12 @@
             :summary="item.summary"
           />
         </div>
+        <PagInation
+          :page="page"
+          :finished="finished"
+          :loading="loading"
+          :nextList="nextBlogList"
+        />
       </div>
     </div>
   </div>
@@ -142,26 +147,39 @@
 import { mapState } from "vuex";
 import { getrand, scrollAnimation, getTime } from "../middleware/public";
 import HomeList from "../components/HomeList";
+import PagInation from "../components/PagInation";
 export default {
   components: {
     HomeList,
+    PagInation,
   },
-  async asyncData({ store }) {
+  async asyncData({ store, error }) {
     const banner = store.state.bannerList;
     const num = getrand(0, banner.length - 1);
     const [socialList, featureList, blogList] = await Promise.allSettled([
       store.dispatch("getSocial"),
       store.dispatch("getFeature"),
-      store.dispatch("getBlogList"),
+      store.dispatch("getBlogList", { page: 1 }),
     ]);
-    return {
-      banner: `url('${banner[num].img}')`,
-      socialList:
-        socialList.status === "fulfilled" ? socialList.value.models : [],
-      featureList:
-        featureList.status === "fulfilled" ? featureList.value.models : [],
-      blogList: blogList.status === "fulfilled" ? blogList.value.models : [],
-    };
+    if (
+      socialList.status === "fulfilled" &&
+      featureList.status === "fulfilled" &&
+      blogList.status === "fulfilled"
+    ) {
+      let list = blogList.value.models;
+      const ListImg = store.state.ListImg;
+      for (let i = 0; i < list.length; i++) {
+        list[i].thumbnail =
+          list[i].thumbnail || ListImg[getrand(0, ListImg.length - 1)].img;
+      }
+      return {
+        banner: `url('${banner[num].img}')`,
+        socialList: socialList.value.models,
+        featureList: featureList.value.models,
+        blogList: list,
+      };
+    }
+    error({ statusCode: 504 });
   },
   data() {
     return {
@@ -171,12 +189,13 @@ export default {
         "blog-item post-list-show left",
         "blog-item post-list-show right",
       ],
+      page: 2, //默认加载了一次所以为第二页
+      finished: false,
+      loading: false,
     };
   },
   computed: {
-    ...mapState(["userInfo"]),
-    ...mapState(["bannerList"]),
-    ...mapState(["ListImg"]),
+    ...mapState(["userInfo", "bannerList", "ListImg"]),
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.changeInnerHeight);
@@ -207,6 +226,25 @@ export default {
       const num = getrand(0, banner.length - 1);
       this.banner = `url('${banner[num].img}')`;
     },
+    //加载下一页
+    async nextBlogList(page) {
+      this.loading = true;
+      const res = await this.$store.dispatch("getBlogList", { page });
+      if (res.success === 1) {
+        let current = res.pageInfo.page * res.pageInfo.size;
+        let total = res.pageInfo.total;
+        let list = res.models;
+        for (let i = 0; i < list.length; i++) {
+          list[i].thumbnail =
+            list[i].thumbnail ||
+            this.ListImg[getrand(0, this.ListImg.length - 1)].img;
+        }
+        this.page = page + 1;
+        this.blogList = this.blogList.concat(list);
+        this.loading = false;
+        if (current > total) this.finished = true;
+      }
+    },
   },
 };
 </script>
@@ -216,6 +254,7 @@ export default {
   position: relative;
   overflow: hidden;
   height: auto;
+
   &:before {
     content: "";
     position: absolute;
@@ -227,17 +266,21 @@ export default {
     background-attachment: fixed;
     background-image: url("../assets/images/grid.png");
   }
+
   @keyframes move_wave {
     0% {
       transform: translateX(0) translateZ(0) scaleY(1);
     }
+
     50% {
       transform: translateX(-25%) translateZ(0) scaleY(0.55);
     }
+
     100% {
       transform: translateX(-50%) translateZ(0) scaleY(1);
     }
   }
+
   .waveWrapper {
     overflow: hidden;
     position: absolute;
@@ -247,6 +290,7 @@ export default {
     top: 0;
     margin: auto;
   }
+
   .waveWrapperInner {
     position: absolute;
     width: 100%;
@@ -254,17 +298,21 @@ export default {
     height: 100%;
     bottom: -1px;
   }
+
   .bgTop {
     z-index: 15;
     opacity: 0.5;
   }
+
   .bgMiddle {
     z-index: 10;
     opacity: 0.75;
   }
+
   .bgBottom {
     z-index: 5;
   }
+
   .wave {
     position: absolute;
     left: 0;
@@ -274,36 +322,46 @@ export default {
     background-position: 0 bottom;
     transform-origin: center bottom;
   }
+
   .waveTop {
     background-size: 50% 100px;
   }
+
   .waveAnimation .waveTop {
     animation: move-wave 3s;
     -webkit-animation: move-wave 3s;
     -webkit-animation-delay: 1s;
     animation-delay: 1s;
   }
+
   .waveMiddle {
     background-size: 50% 120px;
   }
+
   .waveAnimation .waveMiddle {
     animation: move_wave 10s linear infinite;
   }
+
   .waveBottom {
     background-size: 50% 100px;
   }
+
   .waveAnimation .waveBottom {
     animation: move_wave 15s linear infinite;
   }
+
   .waveTop {
     background-image: url("../assets/images/wave-top.png");
   }
+
   .waveMiddle {
     background-image: url("../assets/images/wave-mid.png");
   }
+
   .waveBottom {
     background-image: url("../assets/images/wave-bot.png");
   }
+
   .headertop-down {
     position: absolute;
     bottom: 80px;
@@ -311,6 +369,7 @@ export default {
     cursor: pointer;
     z-index: 90;
     animation: float 2s linear infinite;
+
     i {
       font-size: 32px;
       color: #fff;
@@ -319,6 +378,7 @@ export default {
       transform: scale(1.5, 1);
     }
   }
+
   @-webkit-keyframes float {
     0% {
       -webkit-transform: translateY(0);
@@ -355,12 +415,14 @@ export default {
       transform: translateY(0);
     }
   }
+
   @media (max-width: 768px) {
     .waveWrapper {
       display: none;
     }
   }
 }
+
 .center {
   width: 100%;
   height: 550px;
@@ -373,6 +435,7 @@ export default {
   background-size: cover;
   z-index: -1;
 }
+
 .focusinfo {
   position: relative;
   max-width: 800px;
@@ -387,9 +450,11 @@ export default {
   -moz-transition: 0.4s ease all;
   -o-transition: 0.4s ease all;
   transition: 0.4s ease all;
+
   @media (max-width: 768px) {
     display: none;
   }
+
   .header-tou {
     img {
       box-shadow: inset 0 0 10px #000;
@@ -402,9 +467,11 @@ export default {
       border-radius: 100%;
     }
   }
+
   .header-tou img:hover {
     transform: rotate(360deg);
   }
+
   .glitch {
     font-family: "Ubuntu", sans-serif;
     position: relative;
@@ -415,6 +482,7 @@ export default {
     text-transform: uppercase;
     font-weight: bold;
   }
+
   .glitch:before,
   .glitch:after {
     content: attr(data-text);
@@ -424,22 +492,27 @@ export default {
     background: rgba(0, 0, 0, 0);
     clip: rect(0, 0, 0, 0);
   }
+
   .glitch:before {
     left: -1px;
     text-shadow: 1px 0 #ff3f1a;
   }
+
   .glitch:after {
     left: 1px;
     text-shadow: -1px 0 #00a7e0;
   }
+
   .glitch:hover:before {
     text-shadow: 4px 0 #ff3f1a;
     animation: glitch-loop-1 0.8s infinite ease-in-out alternate-reverse;
   }
+
   .glitch:hover:after {
     text-shadow: -5px 0 #00a7e0;
     animation: glitch-loop-2 0.8s infinite ease-in-out alternate-reverse;
   }
+
   @-webkit-keyframes glitch-loop-1 {
     0% {
       clip: rect(36px, 9999px, 9px, 0);
@@ -547,6 +620,7 @@ export default {
       clip: rect(31px, 9999px, 149px, 0);
     }
   }
+
   .header-info {
     position: relative;
     width: 63%;
@@ -562,6 +636,7 @@ export default {
     box-sizing: initial;
     white-space: nowrap;
   }
+
   .header-info:before {
     content: "";
     position: absolute;
@@ -572,20 +647,24 @@ export default {
     border-style: solid;
     border-color: transparent transparent rgba(0, 0, 0, 0.5) transparent;
   }
+
   .header-info p {
     margin: 0;
     font-family: "Ubuntu", sans-serif;
     font-weight: 700;
+
     span {
       margin: 0 10px;
     }
   }
+
   .top-social_v2 {
     height: 35px;
     margin-bottom: -10px;
     list-style: none;
     display: inline-block;
   }
+
   .top-social_v2 li {
     height: 35px;
     float: left;
@@ -593,6 +672,7 @@ export default {
     cursor: data-uri("../assets/images/ayuda.cur"), auto;
     position: relative;
   }
+
   .top-social_v2 li {
     .img-box {
       position: absolute;
@@ -606,6 +686,7 @@ export default {
       left: 50%;
       transform: translate3d(0, 50px, 0) translateX(-50%);
       opacity: 0;
+
       &:before {
         content: "";
         position: absolute;
@@ -616,11 +697,13 @@ export default {
         border-style: solid;
         border-color: transparent transparent rgba(0, 0, 0, 0.4) transparent;
       }
+
       img {
         width: 100%;
         height: 100%;
       }
     }
+
     .text-box {
       position: absolute;
       border-radius: 4px;
@@ -630,6 +713,7 @@ export default {
       left: 50%;
       transform: translate3d(0, 50px, 0) translateX(-50%);
       opacity: 0;
+
       &:before {
         content: "";
         position: absolute;
@@ -640,6 +724,7 @@ export default {
         border-style: solid;
         border-color: transparent transparent rgba(0, 0, 0, 0.4) transparent;
       }
+
       p {
         color: #ffffff;
         font-weight: normal;
@@ -648,25 +733,30 @@ export default {
       }
     }
   }
+
   .top-social_v2 li:hover .img-box {
     transform: translate3d(0, 16px, 0) translateX(-50%);
     opacity: 1;
     visibility: visible;
   }
+
   .top-social_v2 li:hover .text-box {
     transform: translate3d(0, 16px, 0) translateX(-50%);
     opacity: 1;
     visibility: visible;
   }
+
   .top-social_v2 li:hover .text-box {
     display: block;
   }
+
   .top-social_v2 img {
     height: 35px;
     width: 35px;
     padding: 6px;
     background: 0 0;
   }
+
   .flipx {
     -moz-transform: scaleX(-1);
     -webkit-transform: scaleX(-1);
@@ -675,6 +765,7 @@ export default {
     filter: FlipH;
   }
 }
+
 #indexContent {
   width: 100%;
   max-width: 900px;
@@ -683,21 +774,25 @@ export default {
   margin-right: auto;
   background-color: rgba(255, 255, 255, 0.8);
   animation: main 1s;
+
   @keyframes main {
     0% {
       opacity: 0;
       transform: translateY(50px);
     }
+
     100% {
       opacity: 1;
       transform: translateY(0);
     }
   }
 }
+
 .feature-wrapper {
   @media (max-width: 768px) {
     display: none;
   }
+
   .top-feature-row {
     .top-feature-item {
       position: relative;
@@ -705,22 +800,27 @@ export default {
       box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
       overflow: hidden;
       border-radius: 10px;
+
       a {
         display: block;
         height: 100%;
       }
+
       .img-box {
         transition: all 0.35s ease-in-out;
         transform: scale(1);
         height: 100%;
+
         img {
           width: 100%;
           height: 100%;
         }
       }
+
       &:hover .img-box {
         transform: scale(1.2);
       }
+
       .info {
         position: absolute;
         top: 0;
@@ -734,6 +834,7 @@ export default {
         visibility: hidden;
         opacity: 0;
         transition: all 0.35s ease-in-out;
+
         h3 {
           text-transform: uppercase;
           color: #fff;
@@ -745,6 +846,7 @@ export default {
           transition: all 0.35s ease-in-out;
           transform: translateX(-100%);
         }
+
         p {
           font-style: italic;
           font-size: 12px;
@@ -759,12 +861,15 @@ export default {
           line-height: 20px;
         }
       }
+
       &:hover .info {
         visibility: visible;
         opacity: 1;
+
         h3 {
           transform: translateX(0);
         }
+
         p {
           transform: translateX(0);
         }
@@ -772,11 +877,13 @@ export default {
     }
   }
 }
+
 .feature-title {
   width: 100%;
   height: auto;
   margin-top: 55px;
   display: inline-block;
+
   h1 {
     color: #666;
     font-size: 16px;
@@ -787,16 +894,20 @@ export default {
     margin-bottom: 30px;
     border-bottom: 1px dashed #ececec;
   }
+
   @media (max-width: 768px) {
     margin-top: 15px;
+
     h1 {
       margin-bottom: 15px;
     }
   }
 }
+
 .home-list {
   width: 100%;
 }
+
 .blog-list {
   width: 100%;
 }
