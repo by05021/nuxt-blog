@@ -96,5 +96,9 @@ export const actions = {
     //标签详情
     getTagsDetails({ commit }, { page, postsTagsId }) {
         return this.$axios.$get('/api/blog/posts/posts/v1/list', { params: { page, siez: 10, postsTagsId } });
-    }
+    },
+    //搜索
+    getKeywords({ commit }, { page, keywords }) {
+        return this.$axios.$get('/api/blog/posts/posts/v1/list', { params: { page, siez: 10, keywords } });
+    },
 }

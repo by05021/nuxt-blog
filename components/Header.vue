@@ -202,8 +202,8 @@ export default {
         this.$message.warning("Please type in the content");
       } else {
         this.$router.push({
-          name: "search-id",
-          params: { id: this.searchVal },
+          name: "search-keywords",
+          params: { keywords: this.searchVal },
         });
         this.searchVisible = false;
       }

@@ -16,7 +16,7 @@ export default {
     finished: Boolean,
     loading: Boolean,
     page: Number,
-    id: Number,
+    id: Number | String,
     nextList: Function,
   },
 };
