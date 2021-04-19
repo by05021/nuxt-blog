@@ -1,3 +1,4 @@
+const env = require('./env')
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -49,7 +50,7 @@ export default {
   },
   proxy: {
     '/api/': {
-      target: 'https://www.nosum.cn',
+      target: env[process.env.MODE].ENV_API,
       secure: false,
       changeOrigin: true,
     },
