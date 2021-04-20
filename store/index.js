@@ -67,7 +67,7 @@ export const actions = {
     },
     //首页社交
     getSocial() {
-        return this.$axios.$get('/api/blog/social/social/v1/info');
+        return this.$axios.$get('/api/blog/auth/social/v1/info');
     },
     //首页推荐
     getFeature() {
