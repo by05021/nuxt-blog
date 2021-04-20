@@ -21,7 +21,7 @@
         />
         <PagInation
           :page="page"
-          :finished="finished"
+          :finished="searchList.length > 0 ? finished : true"
           :loading="loading"
           :nextList="nextSearchListList"
           :id="keywords"

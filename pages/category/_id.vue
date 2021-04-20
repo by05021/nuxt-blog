@@ -21,7 +21,7 @@
         />
         <PagInation
           :page="page"
-          :finished="finished"
+          :finished="categoryList.length > 0 ? finished : true"
           :loading="loading"
           :nextList="nextCategoryList"
           :id="id"

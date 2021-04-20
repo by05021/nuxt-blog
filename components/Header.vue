@@ -180,9 +180,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["categoryNav"]),
-    ...mapState(["menu"]),
-    ...mapState(["userInfo"]),
+    ...mapState(["categoryNav", "menu", "userInfo"]),
   },
   methods: {
     getById() {

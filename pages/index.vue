@@ -134,7 +134,7 @@
         </div>
         <PagInation
           :page="page"
-          :finished="finished"
+          :finished="blogList.length > 0 ? finished : true"
           :loading="loading"
           :nextList="nextBlogList"
         />

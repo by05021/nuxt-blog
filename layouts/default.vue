@@ -10,7 +10,28 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import BackTop from "../components/BackTop";
+import { mapState } from "vuex";
 export default {
+  head() {
+    return {
+      title: `Plumemo-${this.config.name}`,
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: this.config.description || "Plumemo",
+        },
+        {
+          hid: "keywords",
+          name: "keywords",
+          content: this.config.keywords || "Plumemo",
+        },
+      ],
+    };
+  },
+  computed: {
+    ...mapState(["config"]),
+  },
   components: {
     Header,
     Footer,

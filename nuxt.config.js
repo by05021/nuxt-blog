@@ -2,17 +2,18 @@ const env = require('./env')
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'blog',
+    title: 'Plumemo',
     htmlAttrs: {
       lang: 'en'
     },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '个人博客' }
+      { hid: 'description', name: 'description', content: '此处是网站描述' },
+      { hid: 'keywords', name: 'keywords', content: '此处是网站关键词' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'icon', type: 'image/x-icon', href: '/sakura.svg' },
       { rel: 'stylesheet', href: '//at.alicdn.com/t/font_1569838_jvrdyorwtit.css' }
     ]
   },

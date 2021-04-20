@@ -101,4 +101,8 @@ export const actions = {
     getKeywords({ commit }, { page, keywords }) {
         return this.$axios.$get('/api/blog/posts/posts/v1/list', { params: { page, siez: 10, keywords } });
     },
+    // 文章详情
+    getPosts({ commit }, { id }) {
+        return this.$axios.$get(`/api/blog/posts/posts/v1/${id}`);
+    },
 }
